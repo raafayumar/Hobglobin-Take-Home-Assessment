@@ -54,7 +54,7 @@ Build a system that:
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-private-repo-url>
+git clone https://github.com/raafayumar/Hobglobin-Take-Home-Assessment.git
 cd <repo-folder>
 ```
 
