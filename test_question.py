@@ -14,6 +14,8 @@ import requests
 
 BASE_URL = "http://127.0.0.1:8000"
 OUTPUT_FILE = "chat_response.txt"
+FINE_PRINTS_FILE = "fine_prints.txt"
+
 
 # Define evaluation questions
 questions = [
@@ -54,6 +56,26 @@ def ask_question(question: str, output_handle):
         error_msg = f"Exception: {e}"
         output_handle.write(error_msg + "\n")
         print(error_msg)
+        
+def save_fine_prints():
+    print("\nFetching fine-print chunks from /fine-prints...")
+    try:
+        response = requests.get(f"{BASE_URL}/fine-prints")
+        if response.status_code == 200:
+            data = response.json()
+            chunks = data.get("fine_prints", [])
+
+            with open(FINE_PRINTS_FILE, "w", encoding="utf-8") as f:
+                f.write("# fine_prints.txt\n\n")
+                f.write("This file contains all the extracted fine-print chunks from the PDF documents that were indexed into the RAG system.\n\n")
+                for i, chunk in enumerate(chunks, 1):
+                    f.write(f"--- Fine Print #{i} ---\n")
+                    f.write(chunk.strip() + "\n\n")
+            print(f"Fine-print chunks saved to {FINE_PRINTS_FILE}")
+        else:
+            print(f"Failed to fetch fine-prints: {response.status_code}")
+    except Exception as e:
+        print(f"Exception while saving fine_prints.txt: {e}")
 
 if __name__ == "__main__":
     print("Hobglobin RAG Chat Evaluation\n")
@@ -64,3 +86,4 @@ if __name__ == "__main__":
             ask_question(q, f)
 
     print(f"\nAll responses saved to {OUTPUT_FILE}")
+    save_fine_prints()
